@@ -1,4 +1,11 @@
-// Initialize Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDYHy7Tc1v6K1EVSk0QkYA9of4L8SGGFiw",
   authDomain: "grocerystore-69026.firebaseapp.com",
@@ -9,21 +16,24 @@ const firebaseConfig = {
   measurementId: "G-HSCY30YL2J"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const productsCollection = db.collection("GroceryStore");
+// Initialize Firebase app and Firestore
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const productsCollection = collection(db, "GroceryStore");
 
-// Load and display products (on index.html)
-function loadProducts() {
-  const container = document.getElementById("productList");
-  if (!container) return;
+// On index.html: Load and display products
+async function loadProducts() {
+  const productList = document.getElementById("productList");
+  if (!productList) return; // Not on index.html
 
-  productsCollection.get().then((querySnapshot) => {
+  try {
+    const querySnapshot = await getDocs(productsCollection);
     if (querySnapshot.empty) {
-      container.innerHTML = "<p>No products found.</p>";
+      productList.innerHTML = "<p>No products found.</p>";
       return;
     }
 
+    productList.innerHTML = ""; // Clear previous content
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const div = document.createElement("div");
@@ -31,35 +41,43 @@ function loadProducts() {
         <strong>${data.name}</strong><br>
         ₹${data.price} - ${data.quantity} in stock<br><br>
       `;
-      container.appendChild(div);
+      productList.appendChild(div);
     });
-  }).catch((error) => {
+  } catch (error) {
     console.error("Error loading products:", error);
-    container.innerHTML = `<p>Error: ${error.message}</p>`;
+    if (productList) productList.innerHTML = `<p>Error loading products.</p>`;
+  }
+}
+
+// On admin.html: Handle form submit to add product
+function setupAddProductForm() {
+  const form = document.getElementById("productForm");
+  if (!form) return; // Not on admin.html
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const price = parseFloat(document.getElementById("price").value);
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const image = document.getElementById("image").value.trim();
+
+    if (!name || isNaN(price) || isNaN(quantity)) {
+      alert("Please fill in all required fields correctly.");
+      return;
+    }
+
+    try {
+      await addDoc(productsCollection, { name, price, quantity, image });
+      alert("Product added successfully!");
+      form.reset();
+    } catch (error) {
+      console.error("Error adding product:", error);
+      alert("Failed to add product.");
+    }
   });
 }
 
-// Handle product form (on admin.html)
-document.addEventListener("DOMContentLoaded", () => {
-  loadProducts();
-
-  const form = document.getElementById("productForm");
-  if (form) {
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const price = parseFloat(document.getElementById("price").value);
-      const quantity = parseInt(document.getElementById("quantity").value);
-      const image = document.getElementById("image").value;
-
-      try {
-        await productsCollection.add({ name, price, quantity, image });
-        alert("Product added!");
-        form.reset();
-      } catch (error) {
-        console.error("Error adding product:", error);
-        alert("Failed to add product.");
-      }
-    });
-  }
-});
+// Initialize
+loadProducts();
+setupAddProductForm();
