@@ -1,44 +1,38 @@
-// Import Firebase modules
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
-
-// Your Firebase config (use yours exactly)
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDYHy7Tc1v6K1EVSk0QkYA9of4L8SGGFiw",
   authDomain: "grocerystore-69026.firebaseapp.com",
   projectId: "grocerystore-69026",
-  storageBucket: "grocerystore-69026.appspot.com",  // corrected storageBucket domain
+  storageBucket: "grocerystore-69026.appspot.com",
   messagingSenderId: "618172755403",
   appId: "1:618172755403:web:83e95d4ee3f07a6f961a4e",
   measurementId: "G-HSCY30YL2J"
 };
 
-// Initialize Firebase and Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-// Reference to your products collection in Firestore
-const productsCollection = collection(db, 'GroceryStore'); // change 'GroceryStore' to your actual collection name if different
+// Initialize Firestore
+const db = firebase.firestore();
 
-// Function to add product (example for admin.html)
-async function addProduct(name, price, quantity) {
-  try {
-    await addDoc(productsCollection, { name, price, quantity });
-    alert("Product added!");
-  } catch (e) {
-    console.error("Error adding product: ", e);
-  }
-}
+// Reference your collection
+const productsCollection = db.collection('GroceryStore');
 
-// Function to get products (example for index.html)
+// Function to get products example
 async function getProducts() {
-  const querySnapshot = await getDocs(productsCollection);
+  const snapshot = await productsCollection.get();
   const products = [];
-  querySnapshot.forEach(doc => {
+  snapshot.forEach(doc => {
     products.push({ id: doc.id, ...doc.data() });
   });
   return products;
 }
 
-// Export functions for your HTML files to use
-export { addProduct, getProducts };
+// Example to display products
+async function displayProducts() {
+  const products = await getProducts();
+  console.log(products);
+  // Render your products here
+}
+
+displayProducts();
