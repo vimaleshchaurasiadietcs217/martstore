@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Store Manager - Add Products</title>
-  <script type="module" src="app.js"></script>
+  <title>Add Product</title>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script src="app.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Store Manager Panel</h1>
+  <h1>Add New Product</h1>
   <form id="productForm">
-    <input type="text" id="name" placeholder="Product Name" required><br>
-    <input type="number" id="price" placeholder="Price" required><br>
-    <input type="number" id="quantity" placeholder="Quantity" required><br>
-    <input type="text" id="image" placeholder="Image URL"><br>
+    <label>Name: <input type="text" id="name" required></label><br>
+    <label>Price: <input type="number" id="price" required></label><br>
+    <label>Quantity: <input type="number" id="quantity" required></label><br>
+    <label>Image URL: <input type="text" id="image"></label><br>
     <button type="submit">Add Product</button>
   </form>
 </body>
