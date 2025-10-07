@@ -1,51 +1,21 @@
-// Import Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Replace with YOUR config
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "YOUR-KEY",
-  authDomain: "yourapp.firebaseapp.com",
-  projectId: "yourapp",
-  storageBucket: "yourapp.appspot.com",
-  messagingSenderId: "123456",
-  appId: "1:123456:web:abcdef"
+  apiKey: "AIzaSyDYHy7Tc1v6K1EVSk0QkYA9of4L8SGGFiw",
+  authDomain: "grocerystore-69026.firebaseapp.com",
+  projectId: "grocerystore-69026",
+  storageBucket: "grocerystore-69026.firebasestorage.app",
+  messagingSenderId: "618172755403",
+  appId: "1:618172755403:web:83e95d4ee3f07a6f961a4e",
+  measurementId: "G-HSCY30YL2J"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Admin Add Product
-const form = document.getElementById("productForm");
-if (form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = document.getElementById("name").value;
-    const price = parseFloat(document.getElementById("price").value);
-    const quantity = parseInt(document.getElementById("quantity").value);
-    const image = document.getElementById("image").value;
-
-    await addDoc(collection(db, "products"), {
-      name, price, quantity, image
-    });
-
-    alert("Product added!");
-    form.reset();
-  });
-}
-
-// Display Products
-const productList = document.getElementById("productList");
-if (productList) {
-  const querySnapshot = await getDocs(collection(db, "products"));
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    const div = document.createElement("div");
-    div.innerHTML = `
-      <img src="${data.image || 'https://via.placeholder.com/150'}" width="150"><br>
-      <strong>${data.name}</strong><br>
-      $${data.price} - ${data.quantity} in stock<br><br>
-    `;
-    productList.appendChild(div);
-  });
-}
+const analytics = getAnalytics(app);
